@@ -1,5 +1,10 @@
 import { useTheme } from "next-themes";
 
+import {
+  useKindeBrowserClient,
+  LogoutLink,
+} from "@kinde-oss/kinde-auth-nextjs";
+
 import Logo from "@/components/logo";
 
 import { Button } from "@/components/ui/button";
@@ -19,6 +24,8 @@ import { LogInIcon, Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const Header = () => {
+  const { user } = useKindeBrowserClient();
+
   const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
 
@@ -52,15 +59,21 @@ const Header = () => {
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-2 h-16">
                 <Avatar className="h-8 w-8 shrink-0">
-                  <AvatarImage src="" alt="User" />
-                  <AvatarFallback className="rounded-lg">HC</AvatarFallback>
+                  <AvatarImage
+                    src={user?.picture || ""}
+                    alt={user?.given_name || ""}
+                  />
+                  <AvatarFallback className="rounded-lg">
+                    {user?.given_name?.charAt(0)}
+                    {user?.family_name?.charAt(0)}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="flex items-center gap-2">
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">
-                      Klevis
+                      {user?.given_name} {user?.family_name}
                       <p className="truncate block w-full max-w-27.5 text-sm text-muted-foreground">
-                        klevis25sfj@gmail.com
+                        {user?.email}
                       </p>
                     </span>
                   </div>
@@ -73,8 +86,10 @@ const Header = () => {
                   <DropdownMenuSeparator />
 
                   <DropdownMenuItem>
-                    <LogInIcon className="h-4 w-4" />
-                    Log Out
+                    <LogoutLink className="flex items-center gap-1">
+                      <LogInIcon className="h-4 w-4" />
+                      Log Out
+                    </LogoutLink>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
               </DropdownMenuContent>

@@ -75,6 +75,7 @@ const MeetingLanding = () => {
                   alt="media"
                   width={330}
                   height={400}
+                  loading="eager"
                 />
               </div>
               <div className="space-y-2">
