@@ -21,8 +21,18 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import MeetingList from "./meeting-list";
 
-const MeetingLanding = () => {
+type PropType = {
+  meetings?: {
+    id: string;
+    meetingCode: string;
+    userId: string;
+    createdAt: Date;
+  }[];
+};
+
+const MeetingLanding = ({ meetings = [] }: PropType) => {
   const router = useRouter();
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -39,6 +49,18 @@ const MeetingLanding = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleJoinCall = () => {
+    if (!input.trim()) return;
+
+    const isUrl =
+      input.includes("http") || input.includes("https") || input.includes(".");
+    if (isUrl) {
+      router.push(input);
+    } else {
+      router.push(`/meet/${input}`);
     }
   };
 
@@ -80,43 +102,55 @@ const MeetingLanding = () => {
                   disabled={!input.trim()}
                   className="rounded-full font-semibold text-primary bg-primary/30 text-base
                     h-12"
+                  onClick={handleJoinCall}
                 >
                   Next
                 </Button>
               </div>
             </div>
           </div>
-          <div className="w-full max-w-lg mx-auto">
-            <Separator className="my-8 h-[0.2px]" />
-            <div className="flex flex-col items-center text-center">
-              <div
-                className="relative w-64 h-64 md:w-80 md:h-80 mb-8 rounded-full overflow-hidden bg-primary/50 flex items-center
+
+          {meetings?.length > 0 && (
+            <div className="w-full max-w-2xl mx-auto mt-1">
+              <Separator className="h-[0.2px] my-6" />
+
+              <MeetingList meetings={meetings} />
+            </div>
+          )}
+
+          {meetings.length === 0 && (
+            <div className="w-full max-w-lg mx-auto">
+              <Separator className="my-8 h-[0.2px]" />
+              <div className="flex flex-col items-center text-center">
+                <div
+                  className="relative w-64 h-64 md:w-80 md:h-80 mb-8 rounded-full overflow-hidden bg-primary/50 flex items-center
                     justify-center"
-              >
-                <Image
-                  src="/images/hero.jpg"
-                  alt="media"
-                  width={330}
-                  height={400}
-                  loading="eager"
-                />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-2xl font-normal">
-                  Get a link to share with your team and start a meeting
-                  instantly.
-                </h3>
-                <p className="text-muted-foreground">
-                  Click{" "}
-                  <span className="font-medium text-primary">
-                    Start meeting
-                  </span>{" "}
-                  to get a link you can share with your team. No sign-ups or
-                  downloads required.
-                </p>
+                >
+                  <Image
+                    src="/images/hero.jpg"
+                    alt="media"
+                    width={330}
+                    height={400}
+                    loading="eager"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-normal">
+                    Get a link to share with your team and start a meeting
+                    instantly.
+                  </h3>
+                  <p className="text-muted-foreground">
+                    Click{" "}
+                    <span className="font-medium text-primary">
+                      Start meeting
+                    </span>{" "}
+                    to get a link you can share with your team. No sign-ups or
+                    downloads required.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
       {loading && <OverlayLoader />}
