@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { WavesIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "cn";
 
 const Logo = (props: { url?: string; className?: string }) => {
   const { url = "/", className } = props;

@@ -2,14 +2,20 @@
 
 import { useState } from "react";
 
+import { KeyboardIcon, Video } from "lucide-react";
+
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+
+import { createMeeting } from "@/app/action/action";
 
 import Header from "./header";
 
-import { KeyboardIcon, Video } from "lucide-react";
+import OverlayLoader from "@/components/overlay-loader";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "@/components/ui/toast";
 import {
   InputGroup,
   InputGroupAddon,
@@ -17,7 +23,24 @@ import {
 } from "@/components/ui/input-group";
 
 const MeetingLanding = () => {
+  const router = useRouter();
   const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleCreateMeeting = async () => {
+    setLoading(true);
+    try {
+      const newMeet = await createMeeting();
+      router.push(`/meet/${newMeet.meetingCode}`);
+    } catch {
+      toast.add({
+        title: "Failed to create meeting",
+        description: "Please try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -36,7 +59,7 @@ const MeetingLanding = () => {
             <div className="flex flex-col md:flex-row items-center gap-10 w-full justify-center">
               <Button
                 className="text-base rounded-full px-5! h-12 font-semibold cursor-pointer"
-                onClick={() => {}}
+                onClick={handleCreateMeeting}
               >
                 <Video className="h-5 w-5 fill-white! stroke-0!" />
               </Button>
@@ -96,6 +119,7 @@ const MeetingLanding = () => {
           </div>
         </div>
       </div>
+      {loading && <OverlayLoader />}
     </>
   );
 };
